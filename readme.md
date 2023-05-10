@@ -4,13 +4,13 @@ done:
   * auth0 integration
   * prometheus
   * additional logic (client recieving interval)
+  * shedule mailing
 
   main:
   * send messages to service
   * database setup
 
 in progress:
-* sheduling mailing
 * process mailing
 * api endpoints
 * logging
