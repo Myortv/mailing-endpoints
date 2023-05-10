@@ -1,9 +1,6 @@
-from typing import Any, List
-
+from typing import List
 
 import aiohttp
-
-from app.schemas.message import MessageInDB
 
 from datetime import datetime
 
@@ -13,48 +10,59 @@ from app.sheduler.requests import (
 
 from app.sheduler.datatypes import (
     Message,
-    MessagePool
+    MessageRequest,
+    MessageResponse,
+    Mailing,
 )
 
+from
 from app.sheduler.exceptions import BadResponse
 
 
-DEFAULT_TIMEZONE = datetime.now().tzinfo()
+import logging
 
 
-async def send_awaited_messages(
-    aiohttp_session: aiohttp.ClientSession,
-    url: str,
-    token: str,
-    message_pool: MessagePool,
+async def mailing_task(
+    mailing_task: Mailing,
+    token: str = None,  # create token as dep
+    url: str = None,  # create url as dep
 ):
-    while message_pool.messages:
-        message: Message = message_pool.messages.pop(0)
-        now = datetime.now(DEFAULT_TIMEZONE)
-        try:
-            if now > message.start_window:
-                if message.end_window:
-                    if now < message.end_window:
-                        # message has both start and end marks and fit in them
+    logging.info('\t\t----------------------- SERVING MAILING TASK ---------------------')
+    # create session here
+    # aiohttp_session: aiohttp.ClientSession,
+    logging.info('\t\t----------------------- START AIOHTTP SESSION ---------------------')
+    message_queue = mailing_task.message_queue
+    now = datetime.now(message_queue[0].start_window.tzinfo)
+    async with aiohttp.ClientSession() as session:
+        while message_queue:
+            message: Message = message_queue.pop(0)
+            try:
+                if now > message.start_window:
+                    if message.end_window:
+                        if now < message.end_window:
+                            # message has both start and end marks and fit in them
+                            
+                            await send_message(
+                                MessageRequest(),
+                                url,
+                                token
+                            )
+                        else:
+                            # its too late to send message
+                            continue
+                    else:
                         await send_message(
                             message.message_object.dict(),
                             url,
                             token
                         )
-                    else:
-                        # its too late to send message
-                        pass
                 else:
-                    # message has only start mark and fit in 
-                    await send_message(
-                        message.message_object.dict(),
-                        url,
-                        token
-                    )
-            else:
-                # it's to early to send message
-                message_pool.messages.append(message)
-        except BadResponse as e:
-            # something wrong with reciever
-            print(e)
-            pass
+                    # it's to early to send message
+                    message_queue.append(message)
+            except BadResponse as e:
+                # something wrong with reciever
+                logging.warning(e)
+                pass
+            except Exception as e:
+                # something wrong with the code
+                logging.warning(e.__str__())

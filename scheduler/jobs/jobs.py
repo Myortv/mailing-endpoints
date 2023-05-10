@@ -1,32 +1,24 @@
 from typing import List
 
-from random import randint
 import asyncio
 
-from apscheduler.triggers.interval import IntervalTrigger
-
-from app.core.configs import settings
-from app.schemas.mailing import MailingInDB
-from app.schemas.client import ClientInDB
+from scheduler.schemas.mailing import MailingInDB
+from scheduler.schemas.client import ClientInDB
 
 # from app.db.base import DatabaseManager
-from app.controllers.mailing import get_nearest_mailing
-from app.controllers.client import get_free_clients
+from scheduler.controllers.mailing import get_nearest_mailing
+from scheduler.controllers.client import get_free_clients
 
-from app.sheduler.configs import AliveMailings
-from app.sheduler.datatypes import Mailing
+from scheduler.core.alive import AliveMailings
+from scheduler.schemas.datatypes import Mailing
 
-from app.sheduler.loop import mailing_task
+from scheduler.tasks.loop import mailing_task
 
 from datetime import datetime, timedelta
-
-from apscheduler.triggers.cron import CronTrigger
-from apscheduler.triggers.combining import AndTrigger
 
 import logging
 
 logging.basicConfig(level=logging.INFO)
-
 
 
 
@@ -77,7 +69,8 @@ async def check_free_mailing():
                 # set timeout for task
                 logging.info(f'\t\tinside check_free_mailing. {mailing.id}')
                 logging.info(f'\t\tmailing is suspended for 1 minuts')
-                mailing_task_holder.timeout = datetime.now() + timedelta(minutes=1)
+                # mailing_task_holder.timeout = datetime.now() + timedelta(minutes=1)
+                mailing_task_holder.timeout = datetime.now() + timedelta(seconds=15)
                 AliveMailings.mailings[mailing.id] = mailing_task_holder
                 logging.info(f'\t\t----------------------- MAILING SUSPENDED -----------------------')
                 logging.info(f'\t\t----------------------- END ITERATION -----------------------')

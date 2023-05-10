@@ -1,8 +1,8 @@
 from fastapi import HTTPException
 
-from app.schemas.mailing import MailingInDB
+from scheduler.schemas.mailing import MailingInDB
 
-from app.db.base import DatabaseManager as DM
+from scheduler.db.base import DatabaseManager as DM
 
 from asyncpg import Connection
 

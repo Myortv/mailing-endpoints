@@ -5,7 +5,7 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from app.schemas.client import ClientInDB
+from scheduler.schemas.client import ClientInDB
 
 import asyncio
 
@@ -41,12 +41,3 @@ class Mailing:
                 client_id=client.id,
                 phone=int(client.phone_number),
             ))
-
-class MessageRequest(BaseModel):
-    id: int
-    phone: int
-    text: str
-
-class MessageResponse(BaseModel):
-    code: int
-    message: str

@@ -4,9 +4,11 @@ import aiohttp
 
 import ujson
 
-from app.sheduler.exceptions import (
+from scheduler.exceptions.exceptions import (
         BadResponse
     )
+
+import logging
 
 
 async def send_message(
@@ -14,6 +16,7 @@ async def send_message(
     url: str,
     auth_token: str,
 ):
+    logging.info('\t\t----------------------- SENDING MESSAGE ---------------------')
     headers = dict()
     headers['Authorization'] = f'Bearer {auth_token}'
     body = ujson.dumps(data)

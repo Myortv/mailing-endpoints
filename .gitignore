@@ -33,3 +33,4 @@ TODO.txt
 *env.sh*
 *prometheus*
 .env
+*.bak

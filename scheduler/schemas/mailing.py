@@ -5,7 +5,7 @@ from typing import Optional
 from pydantic import BaseModel
 from pydantic import validator
 
-from app.schemas.client import ClientFliter
+from scheduler.schemas.client import ClientFliter
 
 
 class MailingBase(BaseModel):

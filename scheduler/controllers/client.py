@@ -2,26 +2,14 @@ from typing import List, Dict
 from asyncpg import Connection
 from fastapi import HTTPException
 
-from app.schemas.client import ClientInDB, ClientFliter
+from scheduler.schemas.client import ClientInDB, ClientFliter
 
-from app.db.base import DatabaseManager as DM
+from scheduler.db.base import DatabaseManager as DM
 
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-
-@DM.acquire_connection()
-async def get_all_clients(
-    conn: Connection = None,
-) -> List:
-    result = await conn.fetch(
-        'select * from client '
-    )
-    if not result:
-        return
-    clients = [ClientInDB(**client) for client in result]
-    return clients
 
 def unpack_data(data):
     if isinstance(data, dict):
@@ -52,7 +40,7 @@ async def get_free_clients(
     conn: Connection = None,
 ) -> List:
     placeholder, values = generate_placeholder(filters, i=1)
-    logging.debug(f'\t\tinside get free clients. placeholder: {placeholder}')
+    logging.info(f'\t\tinside get free clients. placeholder: {placeholder}')
     result = await conn.fetch(
         'select '
             'id, '
@@ -65,13 +53,13 @@ async def get_free_clients(
         'from '
         'aviable_clients '
             'where '
-            '(aviable_clients.id in (select client_id from message) and '
-            f'$1 in (select mailing_id from message)) = false {placeholder} ',
+            "(aviable_clients.id in (select client_id from message where message.status = 'await') and "
+            f"$1 in (select mailing_id from message where message.status = 'await' )) = false {placeholder} ",
         mailing_id,
         *values
     )
-    logging.debug(f'\t\tinside get free clients. placeholder: {placeholder}')
-    logging.debug(f'\t\tinside get free clients. clients: {result}')
+    logging.info(f'\t\tinside get free clients. placeholder: {placeholder}')
+    logging.info(f'\t\tinside get free clients. clients: {result}')
     if not result:
         return
     clients = [ClientInDB(**client) for client in result]

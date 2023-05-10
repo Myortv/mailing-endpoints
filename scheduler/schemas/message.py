@@ -10,11 +10,12 @@ import re
 
 phonenumber_pattern = re.compile('^7[0-9]{10}$')
 
+
 class MessageBase(BaseModel):
-    creation_time: Optional[datetime.datetime]
     mailing_id: int
     client_id: int
-    status: Optional[str]
+    creation_time: Optional[datetime.datetime]
+    status: Optional[str] = 'await'
 
     @validator('mailing_id', 'client_id')
     def is_positive(cls, v):
@@ -39,6 +40,7 @@ class MessageInDB(MessageBase):
     creation_time: datetime.datetime
     id: int
 
+
 class MessageOutPut(BaseModel):
     id: int
     phone: str
@@ -51,5 +53,17 @@ class MessageOutPut(BaseModel):
         else:
             raise ValueError(f'phone number ({v}) is invalid')
 
-# class MessageUpdate(MessageBase):
-#       pass
+
+class MessageCreate(MessageBase):
+      pass
+
+
+class MessageRequest(BaseModel):
+    id: int
+    phone: int
+    text: str
+
+
+class MessageResponse(BaseModel):
+    code: int
+    message: str

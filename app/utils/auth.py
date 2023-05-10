@@ -4,7 +4,7 @@ from configparser import ConfigParser
 
 from app.core.configs import settings
 
- 
+
 'https://{settings.OAUTHDOMAIN}/.well-known/jwks.json'
 class VerifyToken():
     """Does all the token verification using PyJWT"""
@@ -30,7 +30,7 @@ class VerifyToken():
         except jwt.exceptions.DecodeError as error:
             return {"status": "error", "msg": error.__str__()}
 
-        try: 
+        try:
             payload = jwt.decode(
                 self.token,
                 self.signing_key,
