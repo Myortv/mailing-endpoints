@@ -6,10 +6,6 @@ from app.schemas.client import ClientInDB, ClientFliter
 
 from app.db.base import DatabaseManager as DM
 
-import logging
-
-logging.basicConfig(level=logging.DEBUG)
-
 
 @DM.acquire_connection()
 async def get_all_clients(
@@ -70,8 +66,6 @@ async def get_free_clients(
         mailing_id,
         *values
     )
-    logging.debug(f'\t\tinside get free clients. placeholder: {placeholder}')
-    logging.debug(f'\t\tinside get free clients. clients: {result}')
     if not result:
         return
     clients = [ClientInDB(**client) for client in result]

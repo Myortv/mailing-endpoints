@@ -3,7 +3,6 @@ from typing import List, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
 
-from pydantic import BaseModel
 
 from scheduler.schemas.client import ClientInDB
 
@@ -16,7 +15,7 @@ class Message:
     end_window: datetime
     client_id: int
     phone: int
-    timeout: Optional[datetime] = None
+    shifted: bool = False
 
 
 @dataclass
@@ -29,7 +28,7 @@ class Mailing:
     task: asyncio.Task | None = None
     timeout: datetime | None = None
 
-    def set_message_queue(
+    def generate_message_queue(
         self,
         clients: List[ClientInDB],
     ):

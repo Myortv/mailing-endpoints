@@ -25,7 +25,6 @@ from apscheduler.triggers.combining import AndTrigger
 
 import logging
 
-logging.basicConfig(level=logging.INFO)
 
 
 

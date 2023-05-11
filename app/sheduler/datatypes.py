@@ -16,7 +16,6 @@ class Message:
     end_window: datetime
     client_id: int
     phone: int
-    timeout: Optional[datetime] = None
 
 
 @dataclass

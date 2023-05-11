@@ -22,8 +22,6 @@ class Settings(BaseSettings):
     OAUTHAUDIENCE: str
     AUTH: Auth0 = None
 
-    SCHEDULER: AsyncIOScheduler = None
-
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(
         cls,

@@ -29,6 +29,6 @@ async def get_nearest_mailing(
             )'''
         )
     if not result:
-        raise HTTPException(404)
+        return
     mailings = [MailingInDB(**mailing) for mailing in result]
     return mailings

@@ -1,2 +1,0 @@
-select * from aviable_clients where (aviable_clients.id in (select client_id from message) and $1 in (select mailing_id from message)) = false 
-select * from aviable_clients where (aviable_clients.id in (select client_id from message) and $1 in (select mailing_id from message)) = false 

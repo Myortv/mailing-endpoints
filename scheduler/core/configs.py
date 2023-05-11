@@ -17,6 +17,6 @@ class Settings(BaseSettings):
     AUTHTOKEN: str
 
     SCHEDULER: AsyncIOScheduler = None
-
+    LOGGING_FILE: str
 
 settings = Settings()

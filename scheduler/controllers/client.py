@@ -8,8 +8,6 @@ from scheduler.db.base import DatabaseManager as DM
 
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
-
 
 def unpack_data(data):
     if isinstance(data, dict):
@@ -52,9 +50,15 @@ async def get_free_clients(
             'phone_number '
         'from '
         'aviable_clients '
-            'where '
-            "(aviable_clients.id in (select client_id from message where message.status != 'await') and "
-            f"$1 in (select mailing_id from message where message.status != 'await' )) = false {placeholder} ",
+            'where ('
+                "aviable_clients.id in ("
+                    "select client_id from message where message.status != 'await' "
+                ") and "
+                "$1 in ("
+                    "select mailing_id from message where message.status != 'await' "
+                ") "
+            ") = false "
+            f"{placeholder} ",
         mailing_id,
         *values
     )
