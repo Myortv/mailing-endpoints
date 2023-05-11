@@ -34,10 +34,9 @@ class Mailing:
         clients: List[ClientInDB],
     ):
         for client in clients:
-            client_start = datetime.combine(datetime.now().date(), client.start_recieve)
             self.message_queue.append(Message(
-                max(self.start_at, client_start),
-                min(self.end_at, client_start + client.recieve_duration),
+                max(self.start_at, client.start_recieve),
+                min(self.end_at, client.start_recieve + client.recieve_duration),
                 client_id=client.id,
                 phone=int(client.phone_number),
             ))

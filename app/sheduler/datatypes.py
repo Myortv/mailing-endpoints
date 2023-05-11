@@ -35,6 +35,10 @@ class Mailing:
     ):
         for client in clients:
             client_start = datetime.combine(datetime.now().date(), client.start_recieve)
+            print('ggggggggggggggggggggggggggggggggggggggggggg')
+            print(self.start_at)
+            print(client_start)
+            print('ggggggggggggggggggggggggggggggggggggggggggg')
             self.message_queue.append(Message(
                 max(self.start_at, client_start),
                 min(self.end_at, client_start + client.recieve_duration),

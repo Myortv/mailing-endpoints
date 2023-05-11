@@ -4,7 +4,7 @@ from typing import List
 
 import aiohttp
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import asyncio
 
@@ -25,6 +25,9 @@ from scheduler.schemas.message import (
     MessageResponse,
     MessageCreate,
 )
+
+from pydantic import ValidationError
+
 from scheduler.exceptions.exceptions import BadResponse
 
 import logging
@@ -32,8 +35,6 @@ import logging
 
 async def mailing_task(
     mailing_task: Mailing,
-    token: str = None,  # create token as dep
-    url: str = None,  # create url as dep
 ):
     logging.info('\t\t----------------------- SERVING MAILING TASK ---------------------')
     # create session here
@@ -64,8 +65,6 @@ async def mailing_task(
                                     phone=message.phone,
                                     text=mailing_task.body
                                 ).dict(),
-                                url,
-                                token,
                             )
                             logging.info('\t\t----------------------- MESSAGE CHANGE STATUS IN DB ---------------------')
                             await change_status(message_in_db.id, 'sended')
@@ -81,19 +80,29 @@ async def mailing_task(
                                 phone=message.phone,
                                 text=mailing_task.body
                             ).dict(),
-                            url,
-                            token,
                         )
                 else:
                     # it's to early to send message
-                    message_queue.append(message)
+                    logging.info(f'\t\t----------------------- {message} ---------------------')
                     logging.info('\t\t----------------------- MESSAGE IS SHIFTED TO TOP ---------------------')
-                    await asyncio.sleep(0.001)
+                    message_queue.append(message)
+                    if id(message) == id(message_queue[0]):
+                        logging.info('\t\t----------------------- NO MESSAGE CAN BE SERVED ---------------------')
+                        mailing_task.timeout = datetime.now() + timedelta(seconds=10)
+                        logging.info('\t\t----------------------- TIMEOUT JOB FOR 10 SEC ---------------------')
+                        break
+            except ValidationError as e:
+                logging.info('\t\t----------------------- VALIDATION ERROR ---------------------')
+                logging.warning(e.__str__())
             except BadResponse as e:
                 # something wrong with reciever
+                logging.info(f'\t\t----------------------- BAD RESPONSE ({e.response.status}) ---------------------')
                 logging.warning(e.__str__())
+                logging.warning(await e.response.text())
             except HTTPException as e:
+                logging.info('\t\t----------------------- HTTPEXCEPTION ERROR ---------------------')
                 logging.warning(e.detail())
             except Exception as e:
                 # something wrong with the code
+                logging.info('\t\t----------------------- COMMON EXCEPTION ERROR ---------------------')
                 logging.warning(e.__str__())

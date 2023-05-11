@@ -16,7 +16,7 @@ async def create_message(
     logging.info(f'\t\tinside crate message')
     result = await conn.fetchrow(
         'insert into message (status, mailing_id, client_id) values ($1, $2, $3) '
-        'on conflict (mailing_id, client_id) do nothing returning *',  # change on update
+        'on conflict (mailing_id, client_id) do update set status = message.status returning *',  # change on update
         message.status,
         message.mailing_id,
         message.client_id,

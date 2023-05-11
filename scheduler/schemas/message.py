@@ -36,8 +36,6 @@ class MessageBase(BaseModel):
 
 
 class MessageInDB(MessageBase):
-    status: str
-    creation_time: datetime.datetime
     id: int
 
 

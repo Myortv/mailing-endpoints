@@ -2,7 +2,7 @@ from typing import List, Dict
 from asyncpg import Connection
 from fastapi import HTTPException
 
-from scheduler.schemas.client import ClientInDB, ClientFliter
+from scheduler.schemas.client import ClientInDB, ClientFliter, FreeClientInDB
 
 from scheduler.db.base import DatabaseManager as DM
 
@@ -47,14 +47,14 @@ async def get_free_clients(
             'mobile_operator_code, '
             'tag, '
             'timezone, '
-            'start_recieve at time zone timezone as start_recieve, '
+            '(start_recieve + now()::date) at time zone timezone as start_recieve, '
             'recieve_duration, '
             'phone_number '
         'from '
         'aviable_clients '
             'where '
-            "(aviable_clients.id in (select client_id from message where message.status = 'await') and "
-            f"$1 in (select mailing_id from message where message.status = 'await' )) = false {placeholder} ",
+            "(aviable_clients.id in (select client_id from message where message.status != 'await') and "
+            f"$1 in (select mailing_id from message where message.status != 'await' )) = false {placeholder} ",
         mailing_id,
         *values
     )
@@ -62,5 +62,5 @@ async def get_free_clients(
     logging.info(f'\t\tinside get free clients. clients: {result}')
     if not result:
         return
-    clients = [ClientInDB(**client) for client in result]
+    clients = [FreeClientInDB(**client) for client in result]
     return clients
