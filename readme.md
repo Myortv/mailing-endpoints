@@ -1,17 +1,4 @@
-done:
-  tasks:
-  * swagger
-  * auth0 integration
-  * prometheus
-  * additional logic (client recieving interval)
-  * shedule mailing
+Installation
 
-  main:
-  * send messages to service
-  * database setup
 
-in progress:
-* process mailing
-* api endpoints
-* logging
-* 
+Clone repository 
