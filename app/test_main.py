@@ -40,5 +40,3 @@ def test_get_all_client():
         '/client/admin/all'
     )
     assert response.status_code == 404
-
-

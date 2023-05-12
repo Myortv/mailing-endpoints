@@ -21,8 +21,8 @@ def raise_exception(e):
 
     detail = resolve_detail_conflict(e)
     raise HTTPException(
-        status_code=status_code, 
-        detail=detail, 
+        status_code=status_code,
+        detail=detail,
     )
 
 # async def raise_exceptions(func):
@@ -36,4 +36,3 @@ def raise_exception(e):
 #         except Exception as e:
 #             logging.warning(e)
 #             raise e
-

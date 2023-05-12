@@ -1,4 +1,4 @@
-from app.core.configs import settings
+from app.core.configs import settings, tags_metadata
 
 from fastapi import FastAPI
 
@@ -13,6 +13,9 @@ from prometheus_fastapi_instrumentator import Instrumentator
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
+    version='0.0.1',
+    docs_url=settings.DOCS_URL,
+    openapi_tags=tags_metadata,
     openapi_url=f'{settings.API_V1_STR}/openapi.json',
 )
 
@@ -40,10 +43,12 @@ from app.api.v1 import client, mailing
 app.include_router(
     client.router,
     prefix=settings.API_V1_STR,
+    tags=["Client"]
 )
 app.include_router(
     mailing.router,
     prefix=settings.API_V1_STR,
+    tags=["Mailing"]
 )
 
 
@@ -58,7 +63,9 @@ async def startup():
         settings.POSTGRES_PASSWORD,
         settings.POSTGRES_HOST,
     )
+
     instrumentator.expose(app, include_in_schema=True, should_gzip=True)
+    await settings.fetch_timezones()
 
 
 @app.on_event('shutdown')
