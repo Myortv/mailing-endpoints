@@ -31,7 +31,7 @@ queue_handler = QueueHandler(log_queue)
 queue_handler.setFormatter(file_formatter)
 queue_handler.setLevel(logging.INFO)
 
-filelogger = logging.getLogger('filelogger')
+filelogger = logging.getLogger('root')
 filelogger.addHandler(queue_handler)
 filelogger.setLevel(logging.DEBUG)
 

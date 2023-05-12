@@ -32,3 +32,7 @@ class MailingInDB(MailingBase):
 
 class MailingUpdate(MailingBase):
     pass
+
+
+class MailingCreate(MailingBase):
+    pass
